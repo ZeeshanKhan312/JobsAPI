@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const User=require('../models/User');
 // const bcryptjs=require('bcryptjs');
 const jwt=require('jsonwebtoken');
+const {BadRequestError, UnauthenticatedError}=require('../errors/index')
 
 const register=async(req,res)=>{
     //MONGOOSE VALIDATOR
@@ -19,7 +20,20 @@ const register=async(req,res)=>{
 }
 
 const login=async(req,res)=>{
-    
+    const {email, password}=req.body;
+    if(!email || !password){
+        throw new BadRequestError('Kindly Provide Email & Password');
+    }
+    const user=await User.findOne({email});
+    if(!user){
+        throw new UnauthenticatedError(`Account doesn't exist`);
+    }
+    //VERIFYING PASSWORD
+    const userVerified=await user.verifyPassword(password)
+    if(!userVerified)
+        throw new UnauthenticatedError('Credintial Incorrect');
+    const token=user.createJWT();
+    res.status(StatusCodes.OK).json({name:user.name,token:token});    
 }
 
 module.exports={register, login}

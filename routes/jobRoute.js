@@ -1,7 +1,7 @@
 const express=require('express');
 const router=express.Router();
 
-const{getAllJob, getJob,createJob,
+const{getAllJob, getJob, createJob,
     updateJob, deleteJob}=require('../controllers/jobController');
 
 router.route('/').post(createJob).get(getAllJob);

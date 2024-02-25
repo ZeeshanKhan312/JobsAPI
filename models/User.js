@@ -30,7 +30,7 @@ const userSchema= new mongoose.Schema({
 
 //GENERATING THE TOKEN
 userSchema.methods.createJWT= function(){
-    return jwt.sign({userId:this._id, name:this.name},process.env.JWT_SECRET_KEY,{expiresIn:'30d'})
+    return jwt.sign({userId:this._id, name:this.name},process.env.JWT_SECRET_KEY,{expiresIn:'10h'})
 }
 
 //HASHING THE PASSWORD BEFORE SAVING
@@ -40,4 +40,11 @@ userSchema.pre('save', async function(next){
     
     next();
 })
+
+//VERIFYING THE PASSWORD WITH ENCRYPTED-PASSWORD
+userSchema.methods.verifyPassword=async function(password){
+    const isMatch= await bcrypt.compare(password,this.password);
+    return isMatch;
+}
+
 module.exports=mongoose.model('User',userSchema);
