@@ -13,7 +13,6 @@ const getJob=async(req,res)=>{
     if(!job)
         throw new NotFoundError(`No Job found with id ${jobId}`);
     res.status(StatusCodes.OK).json({job});
-    // res.send('jnd');
 }
 
 
@@ -24,11 +23,28 @@ const createJob=async(req,res)=>{
 }
 
 const updateJob=async(req,res)=>{
-    res.send('get all job');
+    const{id}=req.params;
+    const {userID}=req.user;
+
+    const job=await Jobs.findOneAndUpdate({_id:id,createdBy:userID},req.body,{
+        new:true,
+        runValidators:true
+    });
+    if(!job){
+        throw new NotFoundError(`No job found with id: ${id}`);
+    }
+    res.status(StatusCodes.ACCEPTED).json(job);
 }
 
 const deleteJob=async(req,res)=>{
-    res.send('get all job');
+    const{
+        params:{id:jobId},
+        user:{userID}}=req
+    const job=await Jobs.findOneAndDelete({_id:jobId,createdBy:userID});
+    if(!job){
+        throw new NotFoundError(`Job with id:${jobId} not found`);
+    }
+    res.status(StatusCodes.OK).json({msg:`Job with id:${jobId} deleted`});
 }
 
 module.exports={getAllJob, getJob,createJob,

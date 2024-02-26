@@ -11,7 +11,7 @@ const userSchema= new mongoose.Schema({
     },
     email:{
         type:String,
-        required:[true,'please provide name'],
+        required:[true,'please provide email'],
         minlength:5,
         maxlength:50,
         match:[
